@@ -1,7 +1,7 @@
 
 public class Main {
 	public static void main(String[] args) {
-		BruteForce bruteForce = new BruteForce();
+		DStar bruteForce = new DStar();
 		AStar aStar = new AStar();
 	}
 }
