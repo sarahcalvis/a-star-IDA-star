@@ -63,6 +63,8 @@ public class Main {
 			//add them to the tree as a key value pair
 			straightLines.put(pointAndDistance[0], Integer.parseInt(pointAndDistance[1]));
 		}
+		
+		straightLineScan.close();
 
 		//hard code the initial node. This will always be the startest point when we calculate shortest path
 		Node start = new Node("Ar", "Ar", 0);
