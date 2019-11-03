@@ -63,7 +63,7 @@ public class Main {
 			//add them to the tree as a key value pair
 			straightLines.put(pointAndDistance[0], Integer.parseInt(pointAndDistance[1]));
 		}
-		
+
 		straightLineScan.close();
 
 		//hard code the initial node. This will always be the startest point when we calculate shortest path
@@ -90,16 +90,16 @@ public class Main {
 		NodeComparator nodeComparator = new NodeComparator();
 
 		//make a PriorityQueue to hold nodes that must be traversed
-		PriorityQueue<Node> nodeOptions = new PriorityQueue<Node>(nodeComparator);
+		PriorityQueue<Node> nodeQueue = new PriorityQueue<Node>(nodeComparator);
 
 		//add the initial node
-		nodeOptions.add(start);
+		nodeQueue.add(start);
 
-		//until the PriorityQueue
-		while (nodeOptions.isEmpty() == false) {
+		//until the PriorityQueue is empty
+		while (!nodeQueue.isEmpty()) {
 
 			//take the first node from nodeOptions
-			Node currNode = nodeOptions.remove();
+			Node currNode = nodeQueue.remove();
 
 			//if we found the goal
 			if (currNode.name.equals(goal)) {
@@ -114,37 +114,32 @@ public class Main {
 					bestPath = currNode.path;
 
 					//if all the untraversed paths are already worse than our solution, we are done and break out of the loop
-					if (nodeOptions.peek().cost < cost) {
-						break;
-					}
+					if (nodeQueue.peek().cost > cost) { break; }
 				}
 			}
 			//if the goal wasn't found, add the neighbors of the found node to the PriorityQueue with their path and their cost
-			else {
-				if (neighbors.containsKey(currNode.name)) {
-					for (Neighbor neighbor: neighbors.get(currNode.name)) {
+			else if (neighbors.containsKey(currNode.name)) {
+				for (Neighbor neighbor: neighbors.get(currNode.name)) {
 
-						/* we calculate cost with f(n) = g(n) + h(n)
-						 * g(n) = cost to get to this node
-						 * h(n) = estimated cost from the current node to the goal
-						 * the cost of currNode is f(currNode) = g(currNode) + h(currNode)
-						 * we want to calculate f(newNode) = g(newNode) + h(newNode)
-						 * h(newNode) is stored in straightLines
-						 * g(newNode) = g(currNode) + neighbor.cost
-						 * now, we aren't storing g(currNode)
-						 * we find it by doing this calculation: g(currNode) = f(currNode) - h(currNode)
-						 * f(currNode) is just currNode.cost, and h(currNode) is stored in straightLines
-						 * so f(newNode) = f(currNode) - h(currNode) + neighbor.cost + h(newNode)
-						 */
-						int pathCost = currNode.cost - straightLines.get(currNode.name) + neighbor.cost + straightLines.get(neighbor.name);
+					/* we calculate cost with f(n) = g(n) + h(n)
+					 * g(n) = cost to get to this node
+					 * h(n) = estimated cost from the current node to the goal
+					 * the cost of currNode is f(currNode) = g(currNode) + h(currNode)
+					 * we want to calculate f(newNode) = g(newNode) + h(newNode)
+					 * h(newNode) is stored in straightLines
+					 * g(newNode) = g(currNode) + neighbor.cost
+					 * now, we aren't storing g(currNode)
+					 * we find it by doing this calculation: g(currNode) = f(currNode) - h(currNode)
+					 * f(currNode) is just currNode.cost, and h(currNode) is stored in straightLines
+					 * so f(newNode) = f(currNode) - h(currNode) + neighbor.cost + h(newNode)
+					 */
+					int pathCost = currNode.cost - straightLines.get(currNode.name) + neighbor.cost + straightLines.get(neighbor.name);
 
-						//add the node to the queue
-						nodeOptions.add(new Node(neighbor.name, currNode.path + ", " + neighbor.name, pathCost));
-					}
+					//add the node to the queue
+					nodeQueue.add(new Node(neighbor.name, currNode.path + ", " + neighbor.name, pathCost));
 				}
 			}
 		}
-
 		System.out.println("Path: " + bestPath + "\nCost: " + cost);
 	}
 
