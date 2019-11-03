@@ -22,7 +22,7 @@ public class Main {
 			String[] nodeAndNeighbor = neighborsScan.nextLine().split(" ");
 
 			//make a neighbor object out of the neighbor
-			Neighbor newNeighbor = new Neighbor(nodeAndNeighbor[1], Integer.parseInt(nodeAndNeighbor[2]), Integer.parseInt(nodeAndNeighbor[2]));
+			Neighbor newNeighbor = new Neighbor(nodeAndNeighbor[1], Integer.parseInt(nodeAndNeighbor[2]));
 
 			//if that node name is not already in the neighbors map, add it
 			if (!neighbors.containsKey(nodeAndNeighbor[0])) {
