@@ -1,3 +1,9 @@
+/*
+ * COMP 422: Algorithms
+ * Krause, Robosky, and Calvis
+ * Using A* and D* to solve the shortest path problem with an admissible heuristic
+ */
+
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -7,6 +13,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.LinkedList;
+
 public class ShortestPath {
 	/**
 	 * @param args
@@ -17,8 +24,10 @@ public class ShortestPath {
 		Node start = new Node("Ar", "Ar", 0);	//starting node
 		String goal = "Bu";						//goal node name
 		
-		Map<String, List<Neighbor>> neighbors = getNeighbors("ActualDistances.txt");		//map of distances between neighboring nodes
-		Map<String, Integer> straightLines = getStraightLines("StraightLineDistance.txt");	//map of straight line distances between nodes and goal node
+		//map of distances between neighboring nodes
+		Map<String, List<Neighbor>> neighbors = getNeighbors("ActualDistances.txt");
+		//map of straight line distances between nodes and goal node
+		Map<String, Integer> straightLines = getStraightLines("StraightLineDistance.txt");	
 
 		aStar(start, goal, neighbors, straightLines);	//call aStar
 		dStar(start, goal, neighbors, straightLines);	//call dStar
@@ -33,7 +42,8 @@ public class ShortestPath {
 	 * Performs A*, a shortest path algorithm based on the Triangle Inequality
 	 */
 	public static void aStar(Node start, String goal, Map<String, List<Neighbor>> neighbors, Map<String, Integer> straightLines) {
-		int cost = Integer.MAX_VALUE;	// Initialize to infinity because first solution found will be better
+		// Initialize to infinity because first solution found will be better
+		int cost = Integer.MAX_VALUE;	
 		String bestPath = "";			// Store the best path to goal
 
 		NodeComparator compare = new NodeComparator();						// Use to compare nodes
@@ -54,7 +64,6 @@ public class ShortestPath {
 
 					// All the untraversed paths are worse than our solution therefore we found best path
 					if (nodeQueue.peek().cost > cost) { break; }
-					
 				} // End if (currNode.cost < cost)
 			} // End if (currNode.name.equals(goal))
 			
@@ -64,7 +73,6 @@ public class ShortestPath {
 					// Calculate cost with f(n) = g(n) + h(n) and add the node to the queue
 					int pathCost = currNode.cost - straightLines.get(currNode.name) + neighbor.cost + straightLines.get(neighbor.name);
 					nodeQueue.add(new Node(neighbor.name, currNode.path + ", " + neighbor.name, pathCost));
-					
 				} // End for (Neighbor neighbor: neighbors.get(currNode.name))
 			} // End else if (neighbors.containsKey(currNode.name))
 		} // End while (!nodeQueue.isEmpty())
@@ -119,7 +127,6 @@ public class ShortestPath {
 			else { neighbors.get(nodeAndNeighbor[0]).add(newNeighbor); }
 			
 		} // End while (neighborsScan.hasNextLine())
-
 		neighborsScan.close();
 		
 		return neighbors;
@@ -146,10 +153,8 @@ public class ShortestPath {
 			straightLines.put(pointAndDistance[0], Integer.parseInt(pointAndDistance[1]));	
 			
 		} // End while (straightLineScan.hasNextLine())
-	
 		straightLineScan.close();
 		
 		return straightLines;
 	}
-
 }
