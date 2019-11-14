@@ -7,10 +7,12 @@
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -87,7 +89,49 @@ public class ShortestPath {
 	 * @param straightLines
 	 */
 	public static void dStar(Node start, String goal, Map<String, List<Neighbor>> neighbors, Map<String, Integer> straightLines) {
+		NodeComparator compare = new NodeComparator();						// Use to compare nodes
+		ArrayList<Node> nodeList = new ArrayList<Node>();					// Holds nodes that must be traversed
 
+		nodeList.add(start);			// Add the initial node
+
+		while(!neighbors.isEmpty()) {
+			Node currNode = nodeList.remove(0);
+//			boolean isRaise = isRaise(currentPoint);
+//			   double cost;
+//			   foreach(neighbor in currentPoint.getNeighbors()) {
+//			    if(isRaise) {
+//			     if(neighbor.nextPoint == currentPoint) {
+//			      neighbor.setNextPointAndUpdateCost(currentPoint);
+//			      openList.add(neighbor);
+//			     } else {
+//			      cost = neighbor.calculateCostVia(currentPoint);
+//			      if(cost < neighbor.getCost()) {
+//			       currentPoint.setMinimumCostToCurrentCost();
+//			       openList.add(currentPoint);
+//			      }
+//			     }
+//			    } else {
+//			      cost = neighbor.calculateCostVia(currentPoint);
+//			      if(cost < neighbor.getCost()) {
+//			       neighbor.setNextPointAndUpdateCost(currentPoint);
+//			       openList.add(neighbor);
+//			      }
+//			    }
+//			   }
+		}
+	}
+	
+	public static boolean isRaise(Node node) {
+		int cost;
+//		if(point.getCurrentCost() > point.getMinimumCost()) {
+//			foreach(neighbor in point.getNeighbors()) {
+//			   	cost = point.calculateCostVia(neighbor);
+//			   	if(cost < point.getCurrentCost()) {
+//			    	point.setNextPointAndUpdateCost(neighbor);
+//				}
+//			}
+//		}
+		return false;
 	}
 	
 	/**
