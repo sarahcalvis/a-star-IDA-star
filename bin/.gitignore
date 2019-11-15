@@ -1,8 +1,4 @@
-/AStar.class
-/BruteForce.class
-/Main.class
-/DStar.class
-/Node.class
-/Neighbor.class
-/NodeComparator.class
-/ShortestPath.class
+/algorithms/
+/GraphGenerator.class
+/Point.class
+/Connection.class

@@ -8,5 +8,9 @@ public class Node {
 		this.path = path;
 		this.cost = cost;
 	}
+	
+	public boolean isSameNode(Node n) {
+		return this.name.equals(n.name); 
+	}
 
 }
