@@ -19,29 +19,45 @@ import java.util.LinkedList;
 public class ShortestPath {
 	static Node start;
 	static String goal;
+	static int numNodes;
 	/**
 	 * @param args
 	 * @throws FileNotFoundException
 	 * Sets up for A* and D* and then performs these searches
 	 */
 	public static void main (String[] args) throws FileNotFoundException {
-		//Node start = new Node("Ar", "Ar", 0);	//starting node
-		//String goal = "Bu";						//goal node name
-		goal = "2";
-		start = new Node("0", "0", 0);
+		/////////////////////////////////////////////////////
+		// Generate connected graph of user-specified size //
+		/////////////////////////////////////////////////////
+		generateGraph();
 		
-		GraphGenerator g = new GraphGenerator(10);
-		g.generateCities();
-		g.generateConnections();
-		g.writeToFile();
-
-		//map of distances between neighboring nodes
+		///////////////////////////////////////////////////////
+		// Read nodes, heuristic costs, neighbors from files //
+		///////////////////////////////////////////////////////
+		Map<String, Integer> straightLines = getStraightLines("points.txt");
 		Map<String, List<Neighbor>> neighbors = getNeighbors("connections.txt");
-		//map of straight line distances between nodes and goal node
-		Map<String, Integer> straightLines = getStraightLines("points.txt");	
-
-		aStar(start, goal, neighbors, straightLines);	//call aStar
-		///dStar(start, goal, neighbors, straightLines);	//call dStar
+		
+		////////////////////////////////////
+		// Hard code start and goal nodes //
+		////////////////////////////////////
+		start = new Node("0", "0", 0);
+		goal = "2";
+		
+		//////////////////////
+		// Call and time A* //
+		//////////////////////
+		long startTime = System.nanoTime();
+		aStar(start, goal, neighbors, straightLines);
+		long endTime = System.nanoTime();
+		System.out.println("A* finished executing on " + numNodes + " nodes in " + (endTime - startTime)/1000000000 + " seconds.");
+		
+		//////////////////////
+		// Call and time D* //
+		//////////////////////
+		startTime = System.nanoTime();
+		dStar(start, goal, neighbors, straightLines);
+		endTime = System.nanoTime();
+		System.out.println("D* finished executing on " + numNodes + " nodes in " + (endTime - startTime)/1000000000 + " seconds.");
 
 	}
 
@@ -86,7 +102,9 @@ public class ShortestPath {
 					pathCost -= straightLines.get(currNode.name);
 					pathCost += neighbor.cost;
 					pathCost += straightLines.get(neighbor.name);
-					nodeQueue.add(new Node(neighbor.name, currNode.path + ", " + neighbor.name, pathCost));
+					Node n = new Node(neighbor.name, currNode.path + ", " + neighbor.name, pathCost);
+					System.out.println(currNode.path + ", " + neighbor.name);
+					nodeQueue.add(n);
 				} // End for (Neighbor neighbor: neighbors.get(currNode.name))
 			} // End else if (neighbors.containsKey(currNode.name))
 		} // End while (!nodeQueue.isEmpty())
@@ -194,7 +212,7 @@ public class ShortestPath {
 	 */
 	public static TreeMap<String, Integer> getStraightLines(String fileName) throws FileNotFoundException {
 		// Scanner to read distances from the file
-		Scanner straightLineScan = new Scanner(new File("connections.txt"));	
+		Scanner straightLineScan = new Scanner(new File(fileName));	
 
 		// TreeMap to hold those distances
 		TreeMap<String, Integer> straightLines = new TreeMap<String, Integer>();
@@ -210,5 +228,18 @@ public class ShortestPath {
 		} // End while (straightLineScan.hasNextLine())
 		straightLineScan.close();
 		return straightLines;
+	}
+	
+	/**
+	 * Generate an unconnected graph
+	 */
+	public static void generateGraph() {
+		Scanner s = new Scanner(System.in);
+		numNodes = s.nextInt();
+		GraphGenerator g = new GraphGenerator(numNodes);
+		g.generateCities();
+		g.generateConnections();
+		g.writeToFile();
+		System.out.println("Graph generated.");
 	}
 }

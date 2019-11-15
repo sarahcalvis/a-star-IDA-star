@@ -64,8 +64,8 @@ public class GraphGenerator {
 	public boolean areConnected(int a, int b) {
 		//System.out.println("areConnected called.");
 		for (Connection conn: c) {
-			if ((conn.a.name.equals(Integer.toString(b))&&conn.b.name.equals(Integer.toString(a)))
-					|| a == b
+			if (/*(conn.a.name.equals(Integer.toString(b))&&conn.b.name.equals(Integer.toString(a)))
+					|| */a == b
 					|| (conn.a.name.equals(Integer.toString(a))&&conn.b.name.equals(Integer.toString(b)))) {
 				return true;
 			}
