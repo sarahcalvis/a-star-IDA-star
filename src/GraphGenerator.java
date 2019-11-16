@@ -37,7 +37,7 @@ public class GraphGenerator {
 			int heuristicCost = (int)Math.floor(Math.sqrt((double)x*x + y*y));
 			p.add(new Point(Integer.toString(i), x, y, heuristicCost));
 		}		
-		
+
 		//System.out.println("Generated " + numCities + " cities.");
 	}
 	/**
@@ -50,7 +50,10 @@ public class GraphGenerator {
 			for (int i = 0; i < initialConnections; i++) {
 				int pa = r.nextInt(numCities);
 				int pb = r.nextInt(numCities);
-				if (!areConnected(pa, pb)) c.add(new Connection(p.get(pa), p.get(pb)));
+				if (!areConnected(pa, pb)) {
+					c.add(new Connection(p.get(pa), p.get(pb)));
+					//c.add(new Connection(p.get(pb), p.get(pa)));
+				}
 			}
 			timesGen++;
 		}
