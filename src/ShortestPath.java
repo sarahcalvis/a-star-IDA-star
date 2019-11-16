@@ -18,6 +18,7 @@ import java.util.LinkedList;
 
 public class ShortestPath {
 	static int numNodes;
+	static String soln;
 	/**
 	 * @param args
 	 * @throws FileNotFoundException
@@ -28,21 +29,21 @@ public class ShortestPath {
 		// Generate connected graph of user-specified size //
 		/////////////////////////////////////////////////////
 		generateGraph();
-		
+
 		///////////////////////////////////////////////////////
 		// Read nodes, heuristic costs, neighbors from files //
 		///////////////////////////////////////////////////////
 		Map<String, Integer> straightLines = getStraightLines("points.txt");
 		Map<String, List<Neighbor>> neighbors = getNeighbors("connections.txt");
 		Map<String, List<Neighbor>> parents = getParents("connections.txt");
-		
+
 		////////////////////////////////////
 		// Hard code start and goal nodes //
 		////////////////////////////////////
 		Node start = new Node("0", "0", 0);
 		Node goalNode = new Node("2", "2", 0);
 		String goal = "2";
-		
+
 		//////////////////////
 		// Call and time A* //
 		//////////////////////
@@ -50,14 +51,14 @@ public class ShortestPath {
 		aStar(start, goal, neighbors, straightLines);
 		long endTime = System.nanoTime();
 		System.out.println("A* finished executing on " + numNodes + " nodes in " + (endTime - startTime)/1000000000 + " seconds.");
-		
+
 		//////////////////////
 		// Call and time D* //
 		//////////////////////
-//		startTime = System.nanoTime();
-//		dStar(start, goalNode, parents, straightLines);
-//		endTime = System.nanoTime();
-//		System.out.println("D* finished executing on " + numNodes + " nodes in " + (endTime - startTime)/1000000009 + " seconds.");
+		startTime = System.nanoTime();
+		IDA(start, goal, neighbors, straightLines);
+		endTime = System.nanoTime();
+		System.out.println("IDA finished executing on " + numNodes + " nodes in " + (endTime - startTime)/1000000009 + " seconds.");
 
 	}
 
@@ -120,67 +121,138 @@ public class ShortestPath {
 		System.out.println("Path: " + bestPath + "\nCost: " + cost);
 	}
 
+	/*public static void IDA(Node start, String goal, Map<String, List<Neighbor>> neighbors, Map<String, Integer> straightLines) {
+		int bound = start.cost; //IDA only searches to the heuristic cost of going from start to goal
+		String bestPath = "";			// Store the best path to goal
+
+
+		while(!start.name.equals(goal) something) {
+			int minCost = Integer.MAX_VALUE;
+			for (Neighbor n: neighbors.get(start)) {
+				if (n.cost < minCost) {
+					start.name = n.name;
+					start.path += ", " + n.name;
+					start.cost += n.cost;
+				}
+			}
+		}
+	}*/
+
+	static void IDA(Node start, String goal, Map<String, List<Neighbor>> neighbors, Map<String, Integer> straightLines) {
+		ArrayList<Node> path = new ArrayList<Node>();
+		int bound = straightLines.get(goal);
+		path.add(start);
+		int t = 0;
+		while(soln !="") {
+			System.out.println("calling search");
+			t = search(path, goal, 0, bound, neighbors, straightLines);
+			if (t == -1) {
+				System.out.println(soln);
+			}
+			if (t == Integer.MAX_VALUE) {
+				System.out.println("No path found.");
+			}
+			bound = t;
+		}
+	}
+
+	static int search(ArrayList<Node> path, String goal, int costSoFar, int bound, Map<String, List<Neighbor>> neighbors, Map<String, Integer> straightLines) {
+		Node currNode = path.get(path.size() - 1);
+		int f = costSoFar + straightLines.get(currNode.name);
+		if (f > bound) {
+			return f;
+		}
+		if (currNode.name.equals(goal)) {
+			soln = "Path: " + currNode.path + "\nCost: " + currNode.cost;
+			return -1;
+		}
+		int min = Integer.MIN_VALUE;
+		for (Neighbor neighbor: neighbors.get(currNode.name)) {
+			boolean inPath = false;
+			for (Node n: path) {
+				if (n.name.equals(neighbor.name)) inPath = true;
+
+				if (!inPath) {
+					ArrayList<Node> p = new ArrayList<Node>();
+					for (Node nod: path) {
+						p.add(nod);
+					}
+					p.add(new Node(neighbor.name, currNode.path + ", " + neighbor.name, currNode.cost + neighbor.cost));
+					int t = search(p, goal, costSoFar + neighbor.cost, bound, neighbors, straightLines);
+					if (t == -1) {
+						return -1;
+					}
+					if (t < min) {
+						min = t;
+					}
+					p.remove(p.size() - 1);
+				}
+			}
+		}
+		return min;
+	}
+
 	/**
 	 * @param start
 	 * @param goal
 	 * @param neighbors
 	 * @param straightLines
 	 */
-//	public static void dStar(Node start, Node goalNode, Map<String, List<Neighbor>> parents, Map<String, Integer> straightLines) {
-//		NodeComparator compare = new NodeComparator();						// Use to compare nodes
-//		PriorityQueue<Node> openList = new PriorityQueue<Node>(compare);					// Holds nodes that must be traversed
-//
-//		openList.add(start);			// Add the initial node
-//
-//		while(!parents.isEmpty()) {
-//			Node currNode = openList.remove();
-//			boolean isRaise = isRaise(currNode, parents);
-//			int cost;
-//			for (Neighbor parent: parents.get(currNode.name)) {
-////				if(isRaise) {
-//				//if(neighbor.nextPoint.isSameNode(currNode))
-//					if(parent.name.equals(currNode.name)) {
-//						//TODO: subtract heuristc???
-//						//TODO: remove neighbor????? idk
-//						Node n = new Node(parent.name, parent.name + ", " + currNode.path, currNode.cost + parent.cost);
-//						openList.add(n);
-//					} 
-//					else {
-//						//TODO: subtract heuristic???
-//						cost = currNode.cost + parent.cost;
-//						if(cost < parent.cost) {
-//							currNode.cost = cost;
-//							currNode.path
-////							openList.add(currNode);
-////						}
-////					}
-//				} else {
-//					cost = neighbor.calculateCostVia(currNode);
-//					if(cost < neighbor.getCost()) {
-//						neighbor.setNextPointAndUpdateCost(currNode);
-//						// TODO: probably have path cost wrong here
-//						int pathCost = currNode.cost - straightLines.get(currNode.name) + neighbor.cost + straightLines.get(neighbor.name);
-//						openList.add(new Node(neighbor.name, currNode.path + ", " + neighbor.name, pathCost));
-//						openList.add(neighbor);
-//					}
-//				}
-//			}
-//		}
-//	}
-//
-//	public static boolean isRaise(Node node,  Map<String, List<Neighbor>> neighbors) {
-//		int cost;
-////		if(node.getCurrentCost() > node.getMinimumCost()) {
-////			for (Neighbor neighbor: neighbors.get(node.name)) {
-////				cost = node.calculateCostVia(neighbor);
-////				if(cost < node.getCurrentCost()) {
-////					node.setNextPointAndUpdateCost(neighbor);
-////				}
-////			}
-////		}
-////		return node.getCurrentCost() > node.getMinimumCost();
-//		return false;
-//	}
+	//	public static void dStar(Node start, Node goalNode, Map<String, List<Neighbor>> parents, Map<String, Integer> straightLines) {
+	//		NodeComparator compare = new NodeComparator();						// Use to compare nodes
+	//		PriorityQueue<Node> openList = new PriorityQueue<Node>(compare);					// Holds nodes that must be traversed
+	//
+	//		openList.add(start);			// Add the initial node
+	//
+	//		while(!parents.isEmpty()) {
+	//			Node currNode = openList.remove();
+	//			boolean isRaise = isRaise(currNode, parents);
+	//			int cost;
+	//			for (Neighbor parent: parents.get(currNode.name)) {
+	////				if(isRaise) {
+	//				//if(neighbor.nextPoint.isSameNode(currNode))
+	//					if(parent.name.equals(currNode.name)) {
+	//						//TODO: subtract heuristc???
+	//						//TODO: remove neighbor????? idk
+	//						Node n = new Node(parent.name, parent.name + ", " + currNode.path, currNode.cost + parent.cost);
+	//						openList.add(n);
+	//					} 
+	//					else {
+	//						//TODO: subtract heuristic???
+	//						cost = currNode.cost + parent.cost;
+	//						if(cost < parent.cost) {
+	//							currNode.cost = cost;
+	//							currNode.path
+	////							openList.add(currNode);
+	////						}
+	////					}
+	//				} else {
+	//					cost = neighbor.calculateCostVia(currNode);
+	//					if(cost < neighbor.getCost()) {
+	//						neighbor.setNextPointAndUpdateCost(currNode);
+	//						// TODO: probably have path cost wrong here
+	//						int pathCost = currNode.cost - straightLines.get(currNode.name) + neighbor.cost + straightLines.get(neighbor.name);
+	//						openList.add(new Node(neighbor.name, currNode.path + ", " + neighbor.name, pathCost));
+	//						openList.add(neighbor);
+	//					}
+	//				}
+	//			}
+	//		}
+	//	}
+	//
+	//	public static boolean isRaise(Node node,  Map<String, List<Neighbor>> neighbors) {
+	//		int cost;
+	////		if(node.getCurrentCost() > node.getMinimumCost()) {
+	////			for (Neighbor neighbor: neighbors.get(node.name)) {
+	////				cost = node.calculateCostVia(neighbor);
+	////				if(cost < node.getCurrentCost()) {
+	////					node.setNextPointAndUpdateCost(neighbor);
+	////				}
+	////			}
+	////		}
+	////		return node.getCurrentCost() > node.getMinimumCost();
+	//		return false;
+	//	}
 
 	/**
 	 * @param fileName: The name of the file holding nodes, their neighbors, and the cost of traveling between them
@@ -217,7 +289,7 @@ public class ShortestPath {
 
 		return neighbors;
 	}
-	
+
 	public static Map<String, List<Neighbor>> getParents(String fileName) throws FileNotFoundException {
 		// Scanner to read cost of traveling between two directly connected nodes
 		Scanner parentsScan = new Scanner(new File(fileName));			
@@ -260,7 +332,7 @@ public class ShortestPath {
 
 		// TreeMap to hold those distances
 		TreeMap<String, Integer> straightLines = new TreeMap<String, Integer>();
-			
+
 		// Parse the file
 		while (straightLineScan.hasNextLine()) {
 			// Make a string array of the node name and its distance from the goal
@@ -273,7 +345,7 @@ public class ShortestPath {
 		straightLineScan.close();
 		return straightLines;
 	}
-	
+
 	/**
 	 * Generate an unconnected graph
 	 */
