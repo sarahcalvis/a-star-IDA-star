@@ -12,5 +12,9 @@ public class Node {
 	public boolean isSameNode(Node n) {
 		return this.name.equals(n.name); 
 	}
+	
+	public String toString() {
+		return "{" + name + ", [" + path + "], " + cost + "}";
+	}
 
 }

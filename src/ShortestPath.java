@@ -35,30 +35,30 @@ public class ShortestPath {
 		///////////////////////////////////////////////////////
 		Map<String, Integer> straightLines = getStraightLines("points.txt");
 		Map<String, List<Neighbor>> neighbors = getNeighbors("connections.txt");
-		Map<String, List<Neighbor>> parents = getParents("connections.txt");
 
 		////////////////////////////////////
 		// Hard code start and goal nodes //
 		////////////////////////////////////
 		Node start = new Node("0", "0", 0);
-		Node goalNode = new Node("2", "2", 0);
 		String goal = "2";
 
 		//////////////////////
 		// Call and time A* //
 		//////////////////////
 		long startTime = System.nanoTime();
-		aStar(start, goal, neighbors, straightLines);
+		String aStarSolution = aStar(start, goal, neighbors, straightLines);
 		long endTime = System.nanoTime();
+		System.out.println("A* found solution " + aStarSolution + ".");
 		System.out.println("A* finished executing on " + numNodes + " nodes in " + (endTime - startTime)/1000000000 + " seconds.");
 
 		//////////////////////
 		// Call and time D* //
 		//////////////////////
 		startTime = System.nanoTime();
-		IDA(start, goal, neighbors, straightLines);
+		String IDAStarSolution = IDA(start, goal, neighbors, straightLines);
 		endTime = System.nanoTime();
-		System.out.println("IDA finished executing on " + numNodes + " nodes in " + (endTime - startTime)/1000000009 + " seconds.");
+		System.out.println("IDA* found solution " + IDAStarSolution + ".");
+		System.out.println("IDA* finished executing on " + numNodes + " nodes in " + (endTime - startTime)/1000000009 + " seconds.");
 
 	}
 
@@ -69,7 +69,7 @@ public class ShortestPath {
 	 * @param straightLines: A list of the straight line distances from all the nodes to the goal node
 	 * Performs A*, a shortest path algorithm based on the Triangle Inequality
 	 */
-	public static void aStar(Node start, String goal, Map<String, List<Neighbor>> neighbors, Map<String, Integer> straightLines) {
+	public static String aStar(Node start, String goal, Map<String, List<Neighbor>> neighbors, Map<String, Integer> straightLines) {
 		// Initialize to infinity because first solution found will be better
 		int cost = -1;	
 		String bestPath = "";			// Store the best path to goal
@@ -85,21 +85,17 @@ public class ShortestPath {
 
 			// If we found the goal
 			if (currNode.name.equals(goal)) {	
-				System.out.println("Found a path: " + currNode.path + " with cost " + currNode.cost);
 
 				// If this path is better than the reigning path
 				if (currNode.cost <= cost || cost == -1) {	
 					cost = currNode.cost;		// Save path cost
 					bestPath = currNode.path;	// Save path
-					System.out.println("At cost " + currNode.cost + ", it's the best path so far.");
 					// All the untraversed paths are worse than our solution therefore we found best path
 					if (nodeQueue.peek().cost > cost) { 
-						System.out.println("But \""+nodeQueue.peek().path + "\" may be better, so we will keep traversing.");
 						break;
 					}
 					else {
-						System.out.println("Path: " + bestPath + "\nCost: " + cost);
-						return;
+						return "Path: " + bestPath + "\nCost: " + cost;
 					}
 				} // End if (currNode.cost < cost)
 			} // End if (currNode.name.equals(goal))
@@ -118,42 +114,27 @@ public class ShortestPath {
 				} // End for (Neighbor neighbor: neighbors.get(currNode.name))
 			} // End else if (neighbors.containsKey(currNode.name))
 		} // End while (!nodeQueue.isEmpty())
-		System.out.println("Path: " + bestPath + "\nCost: " + cost);
+		return "Path: " + bestPath + "\nCost: " + cost;
 	}
 
-	/*public static void IDA(Node start, String goal, Map<String, List<Neighbor>> neighbors, Map<String, Integer> straightLines) {
-		int bound = start.cost; //IDA only searches to the heuristic cost of going from start to goal
-		String bestPath = "";			// Store the best path to goal
+	
 
-
-		while(!start.name.equals(goal) something) {
-			int minCost = Integer.MAX_VALUE;
-			for (Neighbor n: neighbors.get(start)) {
-				if (n.cost < minCost) {
-					start.name = n.name;
-					start.path += ", " + n.name;
-					start.cost += n.cost;
-				}
-			}
-		}
-	}*/
-
-	static void IDA(Node start, String goal, Map<String, List<Neighbor>> neighbors, Map<String, Integer> straightLines) {
+	static String IDA(Node start, String goal, Map<String, List<Neighbor>> neighbors, Map<String, Integer> straightLines) {
 		ArrayList<Node> path = new ArrayList<Node>();
-		int bound = straightLines.get(goal);
+		int bound = straightLines.get(start.name);
 		path.add(start);
 		int t = 0;
-		while(soln !="") {
-			System.out.println("calling search");
+		while(soln !="" && t != -1 && t != Integer.MAX_VALUE) {
 			t = search(path, goal, 0, bound, neighbors, straightLines);
 			if (t == -1) {
-				System.out.println(soln);
+				break;
 			}
 			if (t == Integer.MAX_VALUE) {
-				System.out.println("No path found.");
+				break;
 			}
 			bound = t;
 		}
+		return soln;
 	}
 
 	static int search(ArrayList<Node> path, String goal, int costSoFar, int bound, Map<String, List<Neighbor>> neighbors, Map<String, Integer> straightLines) {
@@ -166,27 +147,26 @@ public class ShortestPath {
 			soln = "Path: " + currNode.path + "\nCost: " + currNode.cost;
 			return -1;
 		}
-		int min = Integer.MIN_VALUE;
+		int min = Integer.MAX_VALUE;
 		for (Neighbor neighbor: neighbors.get(currNode.name)) {
 			boolean inPath = false;
 			for (Node n: path) {
 				if (n.name.equals(neighbor.name)) inPath = true;
-
-				if (!inPath) {
-					ArrayList<Node> p = new ArrayList<Node>();
-					for (Node nod: path) {
-						p.add(nod);
-					}
-					p.add(new Node(neighbor.name, currNode.path + ", " + neighbor.name, currNode.cost + neighbor.cost));
-					int t = search(p, goal, costSoFar + neighbor.cost, bound, neighbors, straightLines);
-					if (t == -1) {
-						return -1;
-					}
-					if (t < min) {
-						min = t;
-					}
-					p.remove(p.size() - 1);
+			}
+			ArrayList<Node> p = new ArrayList<Node>();
+			for (Node nod: path) {
+				p.add(nod);
+			}
+			if (!inPath) {
+				p.add(new Node(neighbor.name, currNode.path + ", " + neighbor.name, currNode.cost + neighbor.cost));
+				int t = search(p, goal, costSoFar + neighbor.cost, bound, neighbors, straightLines);
+				if (t == -1) {
+					return -1;
 				}
+				if (t < min) {
+					min = t;
+				}
+				p.remove(p.size() - 1);
 			}
 		}
 		return min;
