@@ -40,7 +40,7 @@ public class ShortestPath {
 		// Hard code start and goal nodes //
 		////////////////////////////////////
 		Node start = new Node("0", "0", 0);
-		String goal = "2";
+		String goal = "1";
 
 		//////////////////////
 		// Call and time A* //
@@ -70,14 +70,14 @@ public class ShortestPath {
 	 * Performs A*, a shortest path algorithm based on the Triangle Inequality
 	 */
 	public static String aStar(Node start, String goal, Map<String, List<Neighbor>> neighbors, Map<String, Integer> straightLines) {
-		// Initialize to infinity because first solution found will be better
-		int cost = -1;	
-		String bestPath = "";			// Store the best path to goal
-
+		////////////////
+		// Initialize //
+		////////////////
+		int cost = -1;														// Initialize to infinity because first solution found will be better
+		String bestPath = "";												// Store the best path to goal
 		NodeComparator compare = new NodeComparator();						// Use to compare nodes
 		PriorityQueue<Node> nodeQueue = new PriorityQueue<Node>(compare);	// Holds nodes that must be traversed
-
-		nodeQueue.add(start);			// Add the initial node
+		nodeQueue.add(start);												// Add the initial node
 
 		// Iterate through the node queue
 		while (!nodeQueue.isEmpty()) {
@@ -104,13 +104,9 @@ public class ShortestPath {
 			else if (neighbors.containsKey(currNode.name)) {
 				for (Neighbor neighbor: neighbors.get(currNode.name)) {
 					// Calculate cost with f(n) = g(n) + h(n) and add the node to the queue
-					int pathCost = currNode.cost;
-					pathCost -= straightLines.get(currNode.name);
-					pathCost += neighbor.cost;
-					pathCost += straightLines.get(neighbor.name);
-					Node n = new Node(neighbor.name, currNode.path + ", " + neighbor.name, pathCost);
-					//System.out.println(currNode.path + ", " + neighbor.name);
-					nodeQueue.add(n);
+					int pathCost = currNode.cost - straightLines.get(currNode.name) + neighbor.cost + straightLines.get(neighbor.name);
+					nodeQueue.add(new Node(neighbor.name, currNode.path + ", " + neighbor.name, pathCost));
+					
 				} // End for (Neighbor neighbor: neighbors.get(currNode.name))
 			} // End else if (neighbors.containsKey(currNode.name))
 		} // End while (!nodeQueue.isEmpty())
@@ -171,68 +167,6 @@ public class ShortestPath {
 		}
 		return min;
 	}
-
-	/**
-	 * @param start
-	 * @param goal
-	 * @param neighbors
-	 * @param straightLines
-	 */
-	//	public static void dStar(Node start, Node goalNode, Map<String, List<Neighbor>> parents, Map<String, Integer> straightLines) {
-	//		NodeComparator compare = new NodeComparator();						// Use to compare nodes
-	//		PriorityQueue<Node> openList = new PriorityQueue<Node>(compare);					// Holds nodes that must be traversed
-	//
-	//		openList.add(start);			// Add the initial node
-	//
-	//		while(!parents.isEmpty()) {
-	//			Node currNode = openList.remove();
-	//			boolean isRaise = isRaise(currNode, parents);
-	//			int cost;
-	//			for (Neighbor parent: parents.get(currNode.name)) {
-	////				if(isRaise) {
-	//				//if(neighbor.nextPoint.isSameNode(currNode))
-	//					if(parent.name.equals(currNode.name)) {
-	//						//TODO: subtract heuristc???
-	//						//TODO: remove neighbor????? idk
-	//						Node n = new Node(parent.name, parent.name + ", " + currNode.path, currNode.cost + parent.cost);
-	//						openList.add(n);
-	//					} 
-	//					else {
-	//						//TODO: subtract heuristic???
-	//						cost = currNode.cost + parent.cost;
-	//						if(cost < parent.cost) {
-	//							currNode.cost = cost;
-	//							currNode.path
-	////							openList.add(currNode);
-	////						}
-	////					}
-	//				} else {
-	//					cost = neighbor.calculateCostVia(currNode);
-	//					if(cost < neighbor.getCost()) {
-	//						neighbor.setNextPointAndUpdateCost(currNode);
-	//						// TODO: probably have path cost wrong here
-	//						int pathCost = currNode.cost - straightLines.get(currNode.name) + neighbor.cost + straightLines.get(neighbor.name);
-	//						openList.add(new Node(neighbor.name, currNode.path + ", " + neighbor.name, pathCost));
-	//						openList.add(neighbor);
-	//					}
-	//				}
-	//			}
-	//		}
-	//	}
-	//
-	//	public static boolean isRaise(Node node,  Map<String, List<Neighbor>> neighbors) {
-	//		int cost;
-	////		if(node.getCurrentCost() > node.getMinimumCost()) {
-	////			for (Neighbor neighbor: neighbors.get(node.name)) {
-	////				cost = node.calculateCostVia(neighbor);
-	////				if(cost < node.getCurrentCost()) {
-	////					node.setNextPointAndUpdateCost(neighbor);
-	////				}
-	////			}
-	////		}
-	////		return node.getCurrentCost() > node.getMinimumCost();
-	//		return false;
-	//	}
 
 	/**
 	 * @param fileName: The name of the file holding nodes, their neighbors, and the cost of traveling between them
