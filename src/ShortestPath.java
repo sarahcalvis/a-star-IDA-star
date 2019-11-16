@@ -57,7 +57,7 @@ public class ShortestPath {
 		startTime = System.nanoTime();
 		dStar(start, goal, neighbors, straightLines);
 		endTime = System.nanoTime();
-		System.out.println("D* finished executing on " + numNodes + " nodes in " + (endTime - startTime)/1000000000 + " seconds.");
+		System.out.println("D* finished executing on " + numNodes + " nodes in " + (endTime - startTime)/1000000009 + " seconds.");
 
 	}
 
@@ -70,7 +70,7 @@ public class ShortestPath {
 	 */
 	public static void aStar(Node start, String goal, Map<String, List<Neighbor>> neighbors, Map<String, Integer> straightLines) {
 		// Initialize to infinity because first solution found will be better
-		int cost = Integer.MAX_VALUE;	
+		int cost = -1;	
 		String bestPath = "";			// Store the best path to goal
 
 		NodeComparator compare = new NodeComparator();						// Use to compare nodes
@@ -84,13 +84,22 @@ public class ShortestPath {
 
 			// If we found the goal
 			if (currNode.name.equals(goal)) {	
+				System.out.println("Found a path: " + currNode.path + " with cost " + currNode.cost);
+
 				// If this path is better than the reigning path
-				if (currNode.cost < cost) {	
+				if (currNode.cost <= cost || cost == -1) {	
 					cost = currNode.cost;		// Save path cost
 					bestPath = currNode.path;	// Save path
-
+					System.out.println("At cost " + currNode.cost + ", it's the best path so far.");
 					// All the untraversed paths are worse than our solution therefore we found best path
-					if (nodeQueue.peek().cost > cost) { break; }
+					if (nodeQueue.peek().cost > cost) { 
+						System.out.println("But "+nodeQueue.peek().path + " may be better, so we will keep traversing.");
+						break;
+					}
+					else {
+						System.out.println("Path: " + bestPath + "\nCost: " + cost);
+						return;
+					}
 				} // End if (currNode.cost < cost)
 			} // End if (currNode.name.equals(goal))
 
@@ -103,7 +112,7 @@ public class ShortestPath {
 					pathCost += neighbor.cost;
 					pathCost += straightLines.get(neighbor.name);
 					Node n = new Node(neighbor.name, currNode.path + ", " + neighbor.name, pathCost);
-					System.out.println(currNode.path + ", " + neighbor.name);
+					//System.out.println(currNode.path + ", " + neighbor.name);
 					nodeQueue.add(n);
 				} // End for (Neighbor neighbor: neighbors.get(currNode.name))
 			} // End else if (neighbors.containsKey(currNode.name))
