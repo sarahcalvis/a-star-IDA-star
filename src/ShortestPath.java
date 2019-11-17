@@ -47,7 +47,7 @@ public class ShortestPath {
 		String aStarSolution = aStar(start, goal, neighbors, straightLines);
 		long endTime = System.nanoTime();
 		System.out.println("A* found solution:" + aStarSolution + ".");
-		System.out.println("A* found the shortest path in a graph of size " + numNodes + " nodes in " + (endTime - startTime)/1000000000 + " seconds.\n");
+		System.out.println("A* found the shortest path in a graph of size " + numNodes + " nodes in " + (endTime - startTime) + " nanoseconds.\n");
 
 		//////////////////////
 		// Call and time D* //
@@ -56,7 +56,7 @@ public class ShortestPath {
 		String IDAStarSolution = IDA(start, goal, neighbors, straightLines);
 		endTime = System.nanoTime();
 		System.out.println("IDA* found solution:" + IDAStarSolution + ".");
-		System.out.println("IDA* found the shortest path in a graph of size " + numNodes + " nodes in " + (endTime - startTime)/1000000009 + " seconds.\n");
+		System.out.println("IDA* found the shortest path in a graph of size " + numNodes + " nodes in " + (endTime - startTime) + " nanoseconds.\n");
 
 	}
 
