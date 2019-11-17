@@ -21,16 +21,15 @@ public class GraphGenerator {
 		p = new ArrayList<Point>();
 		c = new ArrayList<Connection>();
 		r = new Random();
-		//System.out.println("Initialized a grant with " + numCities + " cities and with dimensions " + spaceSize + " by " + spaceSize + ".");
 	}
 	/**
 	 * generate numCities random points
 	 */
 	public void generateCities() {
 		//starting node
-		p.add(new Point("0", 0, 0, (int)Math.sqrt(2 * (double) numCities * numCities)));
+		p.add(new Point("0", 0, 0, (int)Math.sqrt(2 * (double) spaceSize * spaceSize)));
 		//goal node
-		p.add(new Point("1", numCities, numCities, 0));
+		p.add(new Point("1", numCities*10, numCities*10, 0));
 		for (int i = 2; i < numCities; i++) {
 			int x = r.nextInt(spaceSize);
 			int y = r.nextInt(spaceSize);
@@ -46,7 +45,6 @@ public class GraphGenerator {
 	public void generateConnections() {
 		int timesGen = 0;
 		while(!isConnected()) {
-			//System.out.println("Generating " + initialConnections + " connections between cities. " + (timesGen * initialConnections) + " connections generated so far.");
 			for (int i = 0; i < initialConnections; i++) {
 				int pa = r.nextInt(numCities);
 				int pb = r.nextInt(numCities);

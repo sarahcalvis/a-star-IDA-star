@@ -48,8 +48,8 @@ public class ShortestPath {
 		long startTime = System.nanoTime();
 		String aStarSolution = aStar(start, goal, neighbors, straightLines);
 		long endTime = System.nanoTime();
-		System.out.println("A* found solution " + aStarSolution + ".");
-		System.out.println("A* finished executing on " + numNodes + " nodes in " + (endTime - startTime)/1000000000 + " seconds.");
+		System.out.println("A* found solution:" + aStarSolution + ".");
+		System.out.println("A* found the shortest path in a graph of size " + numNodes + " nodes in " + (endTime - startTime)/1000000000 + " seconds.\n");
 
 		//////////////////////
 		// Call and time D* //
@@ -57,8 +57,8 @@ public class ShortestPath {
 		startTime = System.nanoTime();
 		String IDAStarSolution = IDA(start, goal, neighbors, straightLines);
 		endTime = System.nanoTime();
-		System.out.println("IDA* found solution " + IDAStarSolution + ".");
-		System.out.println("IDA* finished executing on " + numNodes + " nodes in " + (endTime - startTime)/1000000009 + " seconds.");
+		System.out.println("IDA* found solution:" + IDAStarSolution + ".");
+		System.out.println("IDA* found the shortest path in a graph of size " + numNodes + " nodes in " + (endTime - startTime)/1000000009 + " seconds.\n");
 
 	}
 
@@ -77,6 +77,7 @@ public class ShortestPath {
 		String bestPath = "";												// Store the best path to goal
 		NodeComparator compare = new NodeComparator();						// Use to compare nodes
 		PriorityQueue<Node> nodeQueue = new PriorityQueue<Node>(compare);	// Holds nodes that must be traversed
+		start.cost = straightLines.get(start.name);
 		nodeQueue.add(start);												// Add the initial node
 
 		// Iterate through the node queue
@@ -95,7 +96,7 @@ public class ShortestPath {
 						break;
 					}
 					else {
-						return "Path: " + bestPath + "\nCost: " + cost;
+						return "\n\tPath: " + bestPath + "\n\tCost: " + cost;
 					}
 				} // End if (currNode.cost < cost)
 			} // End if (currNode.name.equals(goal))
@@ -110,7 +111,7 @@ public class ShortestPath {
 				} // End for (Neighbor neighbor: neighbors.get(currNode.name))
 			} // End else if (neighbors.containsKey(currNode.name))
 		} // End while (!nodeQueue.isEmpty())
-		return "Path: " + bestPath + "\nCost: " + cost;
+		return "\n\tPath: " + bestPath + "\n\tCost: " + cost;
 	}
 
 	
@@ -140,7 +141,7 @@ public class ShortestPath {
 			return f;
 		}
 		if (currNode.name.equals(goal)) {
-			soln = "Path: " + currNode.path + "\nCost: " + currNode.cost;
+			soln = "\n\tPath: " + currNode.path + "\n\tCost: " + currNode.cost;
 			return -1;
 		}
 		int min = Integer.MAX_VALUE;
@@ -154,7 +155,7 @@ public class ShortestPath {
 				p.add(nod);
 			}
 			if (!inPath) {
-				p.add(new Node(neighbor.name, currNode.path + ", " + neighbor.name, currNode.cost + neighbor.cost));
+				p.add(new Node(neighbor.name, currNode.path + ", " + neighbor.name, currNode.cost + neighbor.cost - straightLines.get(currNode.name)+straightLines.get(neighbor.name)));
 				int t = search(p, goal, costSoFar + neighbor.cost, bound, neighbors, straightLines);
 				if (t == -1) {
 					return -1;
@@ -270,6 +271,6 @@ public class ShortestPath {
 		g.generateCities();
 		g.generateConnections();
 		g.writeToFile();
-		System.out.println("Graph generated.");
+		System.out.println("Graph generated.\n");
 	}
 }
