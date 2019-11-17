@@ -196,8 +196,7 @@ public class ShortestPath {
 			////////////////////////////////
 			// Copy path to a new list, p //
 			////////////////////////////////
-			ArrayList<Node> p = new ArrayList<Node>();
-			for (Node n: path) p.add(n);
+			ArrayList<Node> p = new ArrayList<Node>(path);
 			
 			///////////////////////////////////////////////////////
 			// Find out whether this node is already in the path //
