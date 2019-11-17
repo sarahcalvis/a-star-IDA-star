@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 ////////////////////////////////////
 // A simple point on an x-y plane //
 // We use these to generate nodes //
@@ -8,6 +10,7 @@ public class Point {
 	int y;
 	int heuristicCost;
 	boolean searched;
+	ArrayList<Integer> neighbors;
 	
 	/**
 	 * @param name: Point name
@@ -21,6 +24,7 @@ public class Point {
 		this.y = y;
 		this.heuristicCost = heuristicCost;
 		searched = false;
+		neighbors = new ArrayList<Integer>();
 	}
 	
 	public String toString() {

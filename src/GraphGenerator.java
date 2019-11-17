@@ -96,6 +96,9 @@ public class GraphGenerator {
 		point.searched = true;
 		for (Point neighbor: getNeighbors(point)) if(neighbor.searched == false) search(neighbor);
 	}
+	/**
+	 * Write the points and connections to a file
+	 */
 	public void writeToFile() {
 		String points = "";
 		String connections = "";
@@ -111,6 +114,8 @@ public class GraphGenerator {
 			outc.write(connections);
 			outc.close();
 		}
-		catch (IOException e) System.out.println(e.getMessage());
+		catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 }
