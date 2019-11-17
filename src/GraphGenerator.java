@@ -1,9 +1,13 @@
+/////////////////////////////////
+// Generates a connected graph //
+/////////////////////////////////
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
+
 public class GraphGenerator {
 	public int numCities;
 	public int spaceSize;
@@ -11,6 +15,7 @@ public class GraphGenerator {
 	ArrayList<Point> p;
 	ArrayList<Connection> c;
 	Random r;
+	
 	/**
 	 * @param numCities number of cities for which we will generate a graph
 	 */
@@ -22,6 +27,7 @@ public class GraphGenerator {
 		c = new ArrayList<Connection>();
 		r = new Random();
 	}
+	
 	/**
 	 * generate numCities random points
 	 */
@@ -37,7 +43,6 @@ public class GraphGenerator {
 			p.add(new Point(Integer.toString(i), x, y, heuristicCost));
 		}		
 
-		//System.out.println("Generated " + numCities + " cities.");
 	}
 	/**
 	 * generate connections until the graph is fully connected
@@ -48,14 +53,10 @@ public class GraphGenerator {
 			for (int i = 0; i < initialConnections; i++) {
 				int pa = r.nextInt(numCities);
 				int pb = r.nextInt(numCities);
-				if (!areConnected(pa, pb)) {
-					c.add(new Connection(p.get(pa), p.get(pb)));
-					//c.add(new Connection(p.get(pb), p.get(pa)));
-				}
+				if (!areConnected(pa, pb)) c.add(new Connection(p.get(pa), p.get(pb)));
 			}
 			timesGen++;
 		}
-		//System.out.println("Finished generating " + (timesGen * initialConnections) + " connections. Graph is fully connected.");
 	}
 	/**
 	 * @param a a point
@@ -63,13 +64,8 @@ public class GraphGenerator {
 	 * @return whether the two points are connected
 	 */
 	public boolean areConnected(int a, int b) {
-		//System.out.println("areConnected called.");
 		for (Connection conn: c) {
-			if (/*(conn.a.name.equals(Integer.toString(b))&&conn.b.name.equals(Integer.toString(a)))
-					|| */a == b
-					|| (conn.a.name.equals(Integer.toString(a))&&conn.b.name.equals(Integer.toString(b)))) {
-				return true;
-			}
+			if (a == b || (conn.a.name.equals(Integer.toString(a))&&conn.b.name.equals(Integer.toString(b)))) return true;
 		}
 		return false;
 	}
@@ -78,28 +74,17 @@ public class GraphGenerator {
 	 * @return a list of the points neighbors.
 	 */
 	public ArrayList<Point> getNeighbors(Point point) {
-		//System.out.println("getNeighbors called.");
 		ArrayList<Point> neighbors = new ArrayList<Point>();
-		for (Connection conn: c) {
-			if (conn.a.name.equals(point.name) || conn.b.name.equals(point.name)) {
-				neighbors.add(conn.b);
-			}
-		}
+		for (Connection conn: c) if (conn.a.name.equals(point.name) || conn.b.name.equals(point.name)) neighbors.add(conn.b);
 		return neighbors;
 	}
 	/**
 	 * @return whether the graph is connected
 	 */
 	public boolean isConnected() {
-		for (Point point: p) {
-			point.searched = false;
-		}
+		for (Point point: p) point.searched = false;
 		search(p.get(0));
-		for (Point point: p) {
-			if (point.searched == false) {
-				return false;
-			}
-		}
+		for (Point point: p) if (point.searched == false) return false;
 		return true;
 	}
 	/**
@@ -108,24 +93,14 @@ public class GraphGenerator {
 	 * @return a map with all connected points marked true
 	 */
 	public void search(Point point) {
-		//System.out.println("Searching graph to see if it is connected.");
 		point.searched = true;
-		for (Point neighbor: getNeighbors(point)) {
-			if(neighbor.searched == false) {
-				search(neighbor);
-			}
-		}
+		for (Point neighbor: getNeighbors(point)) if(neighbor.searched == false) search(neighbor);
 	}
 	public void writeToFile() {
-		//System.out.println("Writing connections to file.");
 		String points = "";
 		String connections = "";
-		for (Point point: p) {
-			points += point.toString() + "\n";
-		}
-		for (Connection connection: c) {
-			connections += connection.toString() + "\n";
-		}
+		for (Point point: p) points += point.toString() + "\n";
+		for (Connection connection: c) connections += connection.toString() + "\n";
 		try {
 			FileWriter fp = new FileWriter("points.txt", false);
 			BufferedWriter outp = new BufferedWriter(fp);
@@ -136,9 +111,6 @@ public class GraphGenerator {
 			outc.write(connections);
 			outc.close();
 		}
-		catch (IOException e) {
-			System.out.println(e.getMessage());
-		}
-		//System.out.println(points + "\n" + connections);
+		catch (IOException e) System.out.println(e.getMessage());
 	}
 }

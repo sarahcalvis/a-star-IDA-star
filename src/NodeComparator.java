@@ -1,7 +1,10 @@
 import java.util.Comparator;
 
 public class NodeComparator implements Comparator<Node> {
-
+	
+	//////////////////////////////////
+	// Returns the less costly node //
+	//////////////////////////////////
 	@Override
 	public int compare(Node n1, Node n2) {
 		if (n1.cost < n2.cost) {

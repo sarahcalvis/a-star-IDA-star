@@ -1,8 +1,16 @@
-
+////////////////////////////////////////////////
+// Represents a connection between two points //
+////////////////////////////////////////////////
 public class Connection {
 	Point a;
 	Point b;
 	int distance;
+	
+	/**
+	 * Initialize the points
+	 * @param a: The parent point
+	 * @param b: The child point
+	 */
 	public Connection(Point a, Point b) {
 		this.a = a;
 		this.b = b;
