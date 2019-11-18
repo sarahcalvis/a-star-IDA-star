@@ -306,6 +306,6 @@ public class ShortestPath {
 		g.generateCities();
 		g.generateConnections();
 		g.writeToFile();
-		System.out.println("Graph generated.\n");
+		System.out.println("Graph generated. " + g.c.size() + " connections\n");
 	}
 }
